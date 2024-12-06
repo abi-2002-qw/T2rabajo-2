@@ -1,132 +1,134 @@
 #vanessa abigail alvardo elizalde #
 #realizar un listado de estudiante tomando en cuenta  la siguentes cosas##
 #DNI, Apellidos, Nombre, Nota,Calificación#
-##
+#con interfas grafica #
+import tkinter as tk  
+from tkinter import messagebox, simpledialog
+
 alumnos = []
-###calificación
-def calcular_calificacion(nota):
-    if nota < 5:        #si no siguiente#
+
+### calificación
+def calcular_calificacion(nota):###si no  en caso contrario
+    ##SS,AP,NT,SB ##
+    if nota < 5:
         return "SS"
     elif 5 <= nota < 7:
         return "AP"
     elif 7 <= nota < 9:
         return "NT"
     return "SB"
-def mostrar_alumnos():#mostrar alumnos
-    if not alumnos:
-        print("no hay alumnos registrados.")
-        return
-    for alumno in alumnos:
-        print(f"{alumno['DNI']} {alumno['Apellidos']}, {alumno['Nombre']} {alumno['Nota']:.1f} {alumno['Calificación']}") 
 
-def introducir_alumno():
-    dni = input("DNI: ")
-    if any(a["DNI"] == dni for a in alumnos):
-        print("ya existe un alumno con ese DNI.")
+###mostrar alumnos
+def mostrar_alumnos():
+    if not alumnos:
+        messagebox.showinfo("alumnos", "no hay alumnos registrados.")
         return
-    apellidos = input("apellidos: ")
-    nombre = input("nombre: ")
-    nota = float(input("nota: "))
+    resultado = "\n".join([f"{a['DNI']} {a['Apellidos']}, {a['Nombre']} - {a['Nota']:.1f} ({a['Calificación']})" for a in alumnos])
+    messagebox.showinfo("lista de Alumnos", resultado)
+
+
+def introducir_alumno():# nuevo alumno a la lista 
+    dni = simpledialog.askstring("Nuevo Alumno", "Introduce el DNI:")
+    if any(a["DNI"] == dni for a in alumnos):
+        messagebox.showerror("Error", "Ya existe un alumno con ese DNI.")
+        return
+    apellidos = simpledialog.askstring("Nuevo Alumno", "Introduce los apellidos:")
+    nombre = simpledialog.askstring("Nuevo Alumno", "Introduce el nombre:")
+    try:
+        nota = float(simpledialog.askstring("Nuevo Alumno", "Introduce la nota:"))
+    except ValueError:
+        messagebox.showerror("Error", "La nota debe ser un número.")
+        return
+
     calificacion = calcular_calificacion(nota)
     alumnos.append({"DNI": dni, "Apellidos": apellidos, "Nombre": nombre, "Nota": nota, "Calificación": calificacion})
-    print("Alumno añadido.")
+    messagebox.showinfo("Éxito", "Alumno añadido.")
 
-# eliminar 
+# Función para eliminar un alumno
 def eliminar_alumno():
-    dni = input("DNI del alumno a eliminar: ")
+    dni = simpledialog.askstring("Eliminar Alumno", "Introduce el DNI del alumno a eliminar:")
     for alumno in alumnos:
         if alumno["DNI"] == dni:
             alumnos.remove(alumno)
-            print("alumno eliminado.")
+            messagebox.showinfo("Éxito", "Alumno eliminado.")
             return
-    print("No se encontró un alumno con ese DNI.")
+    messagebox.showerror("Error", "No se encontró un alumno con ese DNI.")
 
-# consultar DNI
+# Función para consultar un alumno
 def consultar_alumno():
-    dni = input("DNI: ")
+    dni = simpledialog.askstring("Consultar Alumno", "Introduce el DNI:")
     for alumno in alumnos:
         if alumno["DNI"] == dni:
-            print(f"nota: {alumno['Nota']:.1f}, Calificación: {alumno['Calificación']}")
+            resultado = f"Nota: {alumno['Nota']:.1f}, Calificación: {alumno['Calificación']}"
+            messagebox.showinfo("Consulta de Alumno", resultado)
             return
-    print("no se encontró un alumno con ese DNI.")
+    messagebox.showerror("Error", "No se encontró un alumno con ese DNI.")
 
-# modificar la nota 
-def modificar_nota():
-    dni = input("DNI: ")
-    for alumno in alumnos:
-        if alumno["DNI"] == dni:
-            nueva_nota = float(input("Nueva nota: "))
-            alumno["nota"] = nueva_nota
-            alumno["calificación"] = calcular_calificacion(nueva_nota)
-            print("nota actualizada.")
-            return
-    print("no se encontró un alumno con ese DNI.")
-
-
+# aqui vamos vamos a utilizar for    para ver < nota
 def mostrar_suspensos():
     suspensos = [a for a in alumnos if a["Nota"] < 5]
     if not suspensos:
-        print("no hay alumnos suspensos.")
-    else:
-        for alumno in suspensos:
-            print(f"{alumno['DNI']} {alumno['Apellidos']}, {alumno['Nombre']} {alumno['Nota']:.1f} {alumno['Calificación']}")
+        messagebox.showinfo("Suspensos", "No hay alumnos suspensos.")
+        return
+    resultado = "\n".join([f"{a['DNI']} {a['Apellidos']}, {a['Nombre']} - {a['Nota']:.1f} ({a['Calificación']})" for a in suspensos])
+    messagebox.showinfo("Suspensos", resultado)
 
-
+#aqui vamos a ver quienes aprobados
 def mostrar_aprobados():
     aprobados = [a for a in alumnos if a["Nota"] >= 5]
     if not aprobados:
-        print("no hay alumnos aprobados.")
-    else:
-        for alumno in aprobados:
-            print(f"{alumno['DNI']} {alumno['Apellidos']}, {alumno['Nombre']} {alumno['Nota']:.1f} {alumno['Calificación']}")
+        messagebox.showinfo("Aprobados", "No hay alumnos aprobados.")
+        return
+    resultado = "\n".join([f"{a['DNI']} {a['Apellidos']}, {a['Nombre']} - {a['Nota']:.1f} ({a['Calificación']})" for a in aprobados])
+    messagebox.showinfo("Aprobados", resultado)
 
-def mostrar_candidatos_mh():
-    candidatos = [a for a in alumnos if a["Nota"] == 10]
-    if not candidatos:
-        print("no hay candidatos a matrícula de honor.")
-    else:
-        for alumno in candidatos:
-            print(f"{alumno['DNI']} {alumno['Apellidos']}, {alumno['Nombre']} {alumno['Nota']:.1f} {alumno['Calificación']}")
-
-# modificar calificación manualmente
-def modificar_calificacion():
-    dni = input("DNI: ")
+# vamos a modificar la nota
+def modificar_nota():
+    dni = simpledialog.askstring("Modificar Nota", "Introduce el DNI:")
     for alumno in alumnos:
         if alumno["DNI"] == dni:
-            nueva_calificacion = input("new calificación (SS, AP, NT, SB): ").upper()
-            if nueva_calificacion in ["SS", "AP", "NT", "SB"]:
-                alumno["calificación"] = nueva_calificacion
-                print("calificación modificada.")
-            else:
-                print("calificación no válida.")
-            return
-    print("no se encontró un alumno con ese DNI.")
+            try:
+                nueva_nota = float(simpledialog.askstring("Modificar Nota", "Introduce la nueva nota:"))
+                alumno["Nota"] = nueva_nota
+                alumno["Calificación"] = calcular_calificacion(nueva_nota)
+                messagebox.showinfo("Éxito", "Nota actualizada.")
+                return
+            except ValueError:
+                messagebox.showerror("Error", "La nota debe ser un número.")
+                return
+    messagebox.showerror("Error", "No se encontró un alumno con ese DNI.")
 
-def menu():#menu de opciones 1-9#
-    opciones = {
-        "1": mostrar_alumnos,
-        "2": introducir_alumno,
-        "3": eliminar_alumno,
-        "4": consultar_alumno,
-        "5": modificar_nota,
-        "6": mostrar_suspensos,
-        "7": mostrar_aprobados,
-        "8": mostrar_candidatos_mh,
-        "9": modificar_calificacion,
-    }
-#vamos a utilizar el while true#
-    while True:
-        print("\n1. mostrar alumnos\n2. Introducir alumno\n3. Eliminar alumno\n4. Consultar alumno")
-        print("5. modificar nota\n6. Mostrar suspensos\n7. Mostrar aprobados\n8. Candidatos a MH\n9. Modificar calificación\n0. Salir")
-        opcion = input("Opción: ")
-        if opcion == "0":
-            print("saliendo...")
-            break
-        elif opcion in opciones:
-            opciones[opcion]()
-        else:
-            print("opción no válida.")
+# Ventana principal
+def main():
+    ventana = tk.Tk()
+    ventana.title("Gestión de Alumnos")
+    
+    ventana.geometry("700x500")#("800x200")# aqui estamos dando  medidas de preferencia 
+    ventana.resizable(False, False)
 
-#fin
+
+
+
+
+
+    
+
+    # MENU ####
+    botones = [ ####opciones disponibles #
+        ("Mostrar Alumnos", mostrar_alumnos),
+        ("Añadir Alumno", introducir_alumno),
+        ("Eliminar Alumno", eliminar_alumno),
+        ("Consultar Alumno", consultar_alumno),
+        ("Mostrar Suspensos", mostrar_suspensos),
+        ("Mostrar Aprobados", mostrar_aprobados),
+        ("Modificar Nota", modificar_nota),
+    ]
+
+    for texto, comando in botones:
+        boton = tk.Button(ventana, text=texto, width=30, height=2, command=comando)
+        boton.pack(pady=10)
+
+    ventana.mainloop()
+
 if __name__ == "__main__":
-    menu()
+    main()
